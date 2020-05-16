@@ -1,3 +1,6 @@
+from scapy.layers.l2 import Ether
+
+
 class EthernetFrame:
     def __init__(self, src, dst, type, payload, interface):
         # if (len(src) == len(dst) == 6):
@@ -16,3 +19,8 @@ class EthernetFrame:
         ethernetFrameDictionary['payload'] = self.payload
         ethernetFrameDictionary['interface'] = self.interface
         return ethernetFrameDictionary
+
+    def getScapyFrame(self):
+        scapyEthernetFrame = Ether(src=self.src, dst=self.dst, type=self.type)
+        scapyEthernetFrame.show()
+        return scapyEthernetFrame
