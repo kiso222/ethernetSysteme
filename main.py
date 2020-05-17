@@ -1,10 +1,9 @@
-from scapy.all import *
-from scapy.layers.l2 import Ether
-
+import EthernetFrame
+import ethernetFrameReceiver
+import ethernetFrameSender
 from getNetworkInterfaces import *
 
 sendingNetworkInterface = getUsableNetworkInterface(getNetworkInterfaces())
-
 
 # test = EthernetFrame.EthernetFrame(
 #   sendingNetworkInterface['HWaddr'], 'ffffffffffff', '0x800', 'Hello Ethernet World', sendingNetworkInterface['name'])
@@ -18,3 +17,12 @@ sendingNetworkInterface = getUsableNetworkInterface(getNetworkInterfaces())
 # sendp(test)
 # test.show()
 # print(str(firstEther))
+
+
+test = EthernetFrame.EthernetFrame(
+    sendingNetworkInterface['HWaddr'], 'ff:ff:ff:ff:ff:ff', 0x9000, 'Hello Ethernet World', sendingNetworkInterface['name'])
+
+scapyFrame = test.getScapyFrame()
+ethernetFrameSender.sendethernetframe(scapyFrame)
+
+ethernetFrameReceiver.receiveEthernetFrame()
