@@ -3,6 +3,8 @@ import ethernetFrameReceiver
 import ethernetFrameSender
 from getNetworkInterfaces import *
 
+managementServerMAC = getUsableNetworkInterface(getNetworkInterfaces())['HWaddr']
+clientMAC = '00:0c:29:e2:35:30'
 sendingNetworkInterface = getUsableNetworkInterface(getNetworkInterfaces())
 
 # test = EthernetFrame.EthernetFrame(
@@ -20,9 +22,11 @@ sendingNetworkInterface = getUsableNetworkInterface(getNetworkInterfaces())
 
 
 test = EthernetFrame.EthernetFrame(
-    sendingNetworkInterface['HWaddr'], 'ff:ff:ff:ff:ff:ff', 0x9000, 'Hello Ethernet World', sendingNetworkInterface['name'])
+    managementServerMAC, clientMAC, 0x9000, 'Hello Ethernet World', sendingNetworkInterface['name'])
 
 scapyFrame = test.getScapyFrame()
-ethernetFrameSender.sendethernetframe(scapyFrame)
+ethernetFrameSender.sendEthernetFrame(scapyFrame)
 
-ethernetFrameReceiver.receiveEthernetFrame()
+#ethernetFrameSender.sendAndReceiveEthernetFrame(scapyFrame)
+
+ethernetFrameReceiver.receiveEthernetFrame(sendingNetworkInterface['name'])
