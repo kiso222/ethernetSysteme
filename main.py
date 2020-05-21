@@ -29,4 +29,8 @@ ethernetFrameSender.sendEthernetFrame(scapyFrame)
 
 #ethernetFrameSender.sendAndReceiveEthernetFrame(scapyFrame)
 
-ethernetFrameReceiver.receiveEthernetFrame(sendingNetworkInterface['name'])
+#ethernetFrameReceiver.receiveEthernetFrame(sendingNetworkInterface['name'])
+asyncResceiver = ethernetFrameReceiver.asyncReceiveEthernetFrame(sendingNetworkInterface['name'])
+asyncResceiver.start()
+
+time.sleep(20)
