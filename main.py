@@ -24,12 +24,13 @@ from constants import *
 # test.show()
 # print(str(firstEther))
 
-DCPTestEthernetFrame = EthernetFrame.EthernetFrame(
-    managementServerMAC, profinetIOMulticastMAC, profinetEtherType)
 
-profinetDCPTestFrame = ProfinetIODCPFrame.ProfinetIODCPFrame(frameID=0xFEFE, serviceID=0x03, serviceType=0x00,
-                                                             ethernetFrame=DCPTestEthernetFrame)
-profinetDCPTestFrame.getScapyProfinetIODCPFrame()
+# DCPTestEthernetFrame = EthernetFrame.EthernetFrame(
+#    managementServerMAC, profinetIOMulticastMAC, profinetEtherType)
+
+# profinetDCPTestFrame = ProfinetIODCPFrame.ProfinetIODCPFrame(frameID=0xFEFE, serviceID=0x03, serviceType=0x00,
+#                                                            ethernetFrame=DCPTestEthernetFrame)
+# profinetDCPTestFrame.getScapyProfinetIODCPFrame()
 # DCPprofinetIOFrame = ProfinetIOFrame.ProfinetIOFrame(frameID=0xFEFE)
 
 # test = EthernetFrame.EthernetFrame(
@@ -38,7 +39,7 @@ profinetDCPTestFrame.getScapyProfinetIODCPFrame()
 
 # ethernetFrameSender.sendEthernetFrame(combined)
 # scapyFrame = test.getScapyFrame()
-#ethernetFrameSender.sendEthernetFrame(scapyFrame)
+# ethernetFrameSender.sendEthernetFrame(scapyFrame)
 
 # ethernetFrameSender.sendAndReceiveEthernetFrame(scapyFrame)
 
@@ -46,12 +47,12 @@ profinetDCPTestFrame.getScapyProfinetIODCPFrame()
 asyncResceiver = ethernetFrameReceiver.asyncReceiveEthernetFrame(sendingNetworkInterface['name'])
 asyncResceiver.start()
 
-#hardcodet IdentRequest-All
-ethernetFrameSender.sendEthernetFrame(Ether(dst="01:0e:cf:00:00:00") /
-        ProfinetIO(frameID=0xFEFE) /
-        ProfinetDCP(service_id=0x05,
-            service_type=0x00, option=0xFF, sub_option=0xFF,
-            dcp_data_length=0x04))
-#testProfinetDCP = ProfinetIODCPFrame.ProfinetIODCPFrame()
+# hardcodet IdentRequest-All
+Ident = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFE) / ProfinetDCP(service_id=0x05, service_type=0x00,
+                                                                                  option=0xFF, sub_option=0xFF,
+                                                                                  dcp_data_length=0x04)
+Ident.show()
+ethernetFrameSender.sendEthernetFrame(Ident)
+# testProfinetDCP = ProfinetIODCPFrame.ProfinetIODCPFrame()
 
-time.sleep(5)
+time.sleep(20)

@@ -8,10 +8,11 @@ from scapy.sendrecv import sendp, sr
 #     s = socket(AF_PACKET, SOCK_RAW)
 #     s.bind(ethernetFrame.interface, 0)
 #     return s.send(ethernetFrame.dst + ethernetFrame.src + ethernetFrame.type + ethernetFrame.payload)
+from constants import managementServerNICName
 
 
 def sendEthernetFrame(scapyFrame):
-    return sendp(scapyFrame)
+    return sendp(scapyFrame, iface=managementServerNICName)
 
 
 def sendAndReceiveEthernetFrame(scapyFrame):
