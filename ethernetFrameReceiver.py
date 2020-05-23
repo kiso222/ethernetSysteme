@@ -3,6 +3,8 @@ import socket
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sniff, AsyncSniffer
 
+from constants import managementServerMAC
+
 
 def receiveEthernetFrame(interface):
     # sniff(iface=interface, prn=lambda x: x.show(), filter="ether src 00:0c:29:e2:35:30")
@@ -14,6 +16,6 @@ def asyncReceiveEthernetFrame(interface):
     return AsyncSniffer(iface=interface, prn=lambda x: incomingFrameHandler(x))
 
 def incomingFrameHandler(frame):
-    print('Da ist etwas reingekommen:')
-    print(frame[Ether].src)
-    frame.show()
+    #if frame[Ether].dst == managementServerMAC:
+        print('Da ist etwas reingekommen:')
+        frame.show()

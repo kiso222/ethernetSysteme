@@ -10,11 +10,11 @@ from scapy.sendrecv import sendp, sr
 #     return s.send(ethernetFrame.dst + ethernetFrame.src + ethernetFrame.type + ethernetFrame.payload)
 
 
-def sendEthernetFrame(scapyEthernetFrame):
-    return sendp(scapyEthernetFrame)
+def sendEthernetFrame(scapyFrame):
+    return sendp(scapyFrame)
 
 
-def sendAndReceiveEthernetFrame(scapyEthernetFrame):
-    return sr(scapyEthernetFrame)
+def sendAndReceiveEthernetFrame(scapyFrame):
+    return sr(scapyFrame)
 # def sendEthernetFrame(scapyEthernetFrame):
 #    return sendp(scapyEthernetFrame)
