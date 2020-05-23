@@ -48,11 +48,11 @@ asyncResceiver = ethernetFrameReceiver.asyncReceiveEthernetFrame(sendingNetworkI
 asyncResceiver.start()
 
 # hardcodet IdentRequest-All
-Ident = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFE) / ProfinetDCP(service_id=0x05, service_type=0x00,
-                                                                                  option=0xFF, sub_option=0xFF,
-                                                                                  dcp_data_length=0x04)
-Ident.show()
-ethernetFrameSender.sendEthernetFrame(Ident)
+#Ident = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFE) / ProfinetDCP(service_id=0x05, service_type=0x00,
+#                                                                                  option=0xFF, sub_option=0xFF,
+#                                                                                  dcp_data_length=0x04)
+ethernetFrameSender.identRequestAll()
+#ethernetFrameSender.sendEthernetFrame(Ident)
 # testProfinetDCP = ProfinetIODCPFrame.ProfinetIODCPFrame()
 
 time.sleep(20)

@@ -1,10 +1,9 @@
 from scapy.contrib.pnio import ProfinetIO
-from scapy.contrib.pnio_dcp import ProfinetDCP, DCPNameOfStationBlock, DCP_SERVICE_ID_IDENTIFY, \
+from scapy.contrib.pnio_dcp import ProfinetDCP, DCP_SERVICE_ID_IDENTIFY, \
     DCP_IDENTIFY_REQUEST_FRAME_ID, DCP_REQUEST
 from scapy.main import load_contrib
 
 import EthernetFrame
-import DCPBlock
 
 load_contrib("pnio_dcp")
 
