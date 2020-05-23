@@ -1,5 +1,6 @@
 import socket
 
+from scapy.layers.l2 import Ether
 from scapy.sendrecv import sniff, AsyncSniffer
 
 
@@ -9,4 +10,10 @@ def receiveEthernetFrame(interface):
     # sniff(iface = interface, prn=lambda x: x.show())
 
 def asyncReceiveEthernetFrame(interface):
-    return AsyncSniffer(iface=interface, prn=lambda x: print('Da ist was reingekommen und zwar:' + str(x.show())))
+    #return AsyncSniffer(iface=interface, prn=lambda x: print('Da ist was reingekommen und zwar:' + str(x.show())))
+    return AsyncSniffer(iface=interface, prn=lambda x: incomingFrameHandler(x))
+
+def incomingFrameHandler(frame):
+    print('Da ist etwas reingekommen:')
+    print(frame[Ether].src)
+    frame.show()
