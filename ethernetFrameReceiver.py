@@ -1,8 +1,9 @@
 import socket
+from pprint import pprint
 
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sniff, AsyncSniffer
-
+from scapy2dict import to_dict
 from constants import managementServerMAC
 
 
@@ -19,6 +20,9 @@ def incomingFrameHandler(frame):
     if frame[Ether].dst == managementServerMAC:
         print('Da ist etwas reingekommen:')
         frame.show()
+        #frameToDict(frame)
 
 def frameToDict(frame):
+    data = to_dict(frame)
+    pprint(data)
     pass
