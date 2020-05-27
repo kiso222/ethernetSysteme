@@ -19,3 +19,6 @@ def incomingFrameHandler(frame):
     if frame[Ether].dst == managementServerMAC:
         print('Da ist etwas reingekommen:')
         frame.show()
+
+def frameToDict(frame):
+    pass

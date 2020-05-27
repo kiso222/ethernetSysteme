@@ -9,7 +9,10 @@ import ethernetFrameSender
 import ProfinetIODCPFrame
 from constants import *
 
+testTargetMAC = '08:00:06:6b:f5:b8'
 # https://github.com/littlezz/scapy2dict
+# Name of Station lesen/schreiben
+# IP Adresse lesen/schreiben
 
 # test = EthernetFrame.EthernetFrame(
 #   sendingNetworkInterface['HWaddr'], 'ffffffffffff', '0x800', 'Hello Ethernet World', sendingNetworkInterface['name'])
@@ -51,8 +54,8 @@ asyncResceiver.start()
 #Ident = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFE) / ProfinetDCP(service_id=0x05, service_type=0x00,
 #                                                                                  option=0xFF, sub_option=0xFF,
 #                                                                                  dcp_data_length=0x04)
-ethernetFrameSender.identRequestAll()
+#ethernetFrameSender.identRequestAll()
 #ethernetFrameSender.sendEthernetFrame(Ident)
 # testProfinetDCP = ProfinetIODCPFrame.ProfinetIODCPFrame()
-
-time.sleep(20)
+ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+time.sleep(5)

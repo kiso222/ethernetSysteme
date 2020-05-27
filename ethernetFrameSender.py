@@ -1,5 +1,5 @@
 from scapy.contrib.pnio import ProfinetIO
-from scapy.contrib.pnio_dcp import ProfinetDCP
+from scapy.contrib.pnio_dcp import ProfinetDCP, DCPNameOfStationBlock
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sendp, sr
 
@@ -29,5 +29,19 @@ def identRequestAll():
         service_id=0x05, service_type=0x00,
         option=0xFF, sub_option=0xFF,
         dcp_data_length=0x04)
-    #Ident.show()
+    # Ident.show()
     return sendEthernetFrame(Ident)
+
+
+def readRequestNameOfStation(dstMacAdress):
+    Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
+        service_id=0x03, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=0x02)
+        #dcp_block_length=10)  # / DCPNameOfStationBlock(option=0x02, sub_option=0x02,
+    # name_of_station = '')
+
+    Request.show()
+
+    return sendEthernetFrame(Request)
+
+def writeRequestNameOfStation(dstMacAdress):
+    pass
