@@ -32,6 +32,6 @@ asyncResceiver.start()
 
 # ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
 ethernetFrameSender.writeRequestNameOfStation(testTargetMAC)
-# ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
 
 time.sleep(20)

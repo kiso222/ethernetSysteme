@@ -46,9 +46,12 @@ def readRequestNameOfStation(dstMacAdress):
 
 def writeRequestNameOfStation(dstMacAdress):
     Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
-        service_id=0x04, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=0x2, dcp_block_length=12,
-        name_of_station='terminator42')
-
+        service_id=0x04, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=16, dcp_block_length=0xC,
+        name_of_station='terminator', reserved=0)
+    #Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
+    #    service_id=0x04, service_type=0x00, dcp_data_length=0xC, ) / DCPNameOfStationBlock(
+    #    option=0x02, sub_option=0x02, dcp_block_length=0xC,
+    #    name_of_station='terminator')
     # ProfinetDCP(
     # service_id=0x04, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=0x2, dcp_block_length=12,
     # name_of_station='1')
