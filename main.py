@@ -11,27 +11,41 @@ from constants import *
 
 testTargetMAC = '08:00:06:6b:f5:b8'
 
-print(managementServerNICName)
+# print(managementServerNICName)
+
 # Name of Station lesen/schreiben
 # IP Adresse lesen/schreiben
 
+####################################################
+#               Aufgabe 1                          #
+####################################################
 # test = EthernetFrame.EthernetFrame(
 #   sendingNetworkInterface['HWaddr'], 'ffffffffffff', '0x800', 'Hello Ethernet World', sendingNetworkInterface['name'])
 # pprint.pprint(test.getEthernetFrame())
 # send.sendEthernetFrame(test)
 
-# DCPTestEthernetFrame = EthernetFrame.EthernetFrame(
-#    managementServerMAC, profinetIOMulticastMAC, profinetEtherType)
 
+####################################################
+#               Aufgabe 2                          #
+####################################################
 # ethernetFrameReceiver.receiveEthernetFrame(sendingNetworkInterface['name'])
 asyncResceiver = ethernetFrameReceiver.asyncReceiveEthernetFrame(sendingNetworkInterface['name'])
 asyncResceiver.start()
 
+####################################################
+#               Aufgabe 2                          #
+#                  Teil 1                          #
+####################################################
 # ethernetFrameSender.identRequestAll()
 # ethernetFrameSender.sendEthernetFrame(Ident)
 
-# ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
-ethernetFrameSender.writeRequestNameOfStation(testTargetMAC)
-ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+####################################################
+#               Aufgabe 2                          #
+#                  Teil 2                          #
+####################################################
 
-time.sleep(20)
+# ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'DasistEinWirklichLangerNameFuerEineMaschine123')
+# time.sleep(1)
+# ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+
+time.sleep(5)

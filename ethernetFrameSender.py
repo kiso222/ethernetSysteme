@@ -36,25 +36,34 @@ def identRequestAll():
 def readRequestNameOfStation(dstMacAdress):
     Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
         service_id=0x03, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=0x02)
-    # dcp_block_length=10)  # / DCPNameOfStationBlock(option=0x02, sub_option=0x02,
-    # name_of_station = '')
 
-    Request.show()
+    # Request.show()
 
     return sendEthernetFrame(Request)
 
 
-def writeRequestNameOfStation(dstMacAdress):
-    Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
-        service_id=0x04, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=16, dcp_block_length=0xC,
-        name_of_station='terminator', reserved=0)
-    #Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
-    #    service_id=0x04, service_type=0x00, dcp_data_length=0xC, ) / DCPNameOfStationBlock(
-    #    option=0x02, sub_option=0x02, dcp_block_length=0xC,
-    #    name_of_station='terminator')
-    # ProfinetDCP(
-    # service_id=0x04, service_type=0x00, option=0x02, sub_option=0x02, dcp_data_length=0x2, dcp_block_length=12,
-    # name_of_station='1')
+def writeRequestNameOfStation(dstMacAdress, newName: str):
+    option = 0x02
+    sub_option = 0x02
+    dcp_block_length = 2 + len(newName)
+    paddingByte = 0
+    block_qualifier_length = 2
 
-    Request.show()
+    if len(newName) % 2:
+        paddingByte = 1
+
+    # debug1 = len(newName)
+    # debug2 = len(str(option))
+    # debug3 = len(str(sub_option))
+    # debug4 = len(str(dcp_block_length))
+
+    dcp_data_length = len(newName) + len(str(option)) + len(str(sub_option)) + len(
+        str(dcp_block_length)) + block_qualifier_length + paddingByte
+
+    Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
+        service_id=0x04, service_type=0x00, option=option, sub_option=sub_option, dcp_data_length=dcp_data_length,
+        dcp_block_length=dcp_block_length,
+        name_of_station=newName, reserved=0)
+
+    # Request.show()
     return sendEthernetFrame(Request)
