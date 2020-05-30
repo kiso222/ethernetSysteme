@@ -44,8 +44,8 @@ asyncResceiver.start()
 #                  Teil 2                          #
 ####################################################
 
-# ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'DasistEinWirklichLangerNameFuerEineMaschine123')
+#ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'terminator')
 # time.sleep(1)
 # ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
-
+ethernetFrameSender.readRequestIPAdress(testTargetMAC)
 time.sleep(5)

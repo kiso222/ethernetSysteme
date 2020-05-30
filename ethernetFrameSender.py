@@ -67,3 +67,17 @@ def writeRequestNameOfStation(dstMacAdress, newName: str):
 
     # Request.show()
     return sendEthernetFrame(Request)
+
+
+def readRequestIPAdress(dstMacAdress):
+    option = 0x01
+    sub_option = 0x02
+    dcp_data_length = len(str(option)) + len(str(sub_option))
+
+    Request = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
+        service_id=0x03, service_type=0x00, option=option, sub_option=sub_option, dcp_data_length=dcp_data_length,
+        reserved=0)
+
+    # Request.show()
+
+    return sendEthernetFrame(Request)
