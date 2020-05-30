@@ -21,9 +21,6 @@ def sendAndReceiveEthernetFrame(scapyFrame):
     return sr(scapyFrame)
 
 
-# def sendEthernetFrame(scapyEthernetFrame):
-#    return sendp(scapyEthernetFrame)
-
 def identRequestAll():
     Ident = Ether(src=managementServerMAC, dst=profinetIOMulticastMAC) / ProfinetIO(frameID=0xFEFE) / ProfinetDCP(
         service_id=0x05, service_type=0x00,
