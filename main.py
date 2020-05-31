@@ -47,5 +47,9 @@ asyncResceiver.start()
 # ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'terminator')
 # time.sleep(1)
 # ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+
+#ethernetFrameSender.readRequestIPAdress(testTargetMAC)
+ethernetFrameSender.writeRequestIPAdress(testTargetMAC, '10.27.6.25', '255.255.255.0', '10.27.6.1')
 ethernetFrameSender.readRequestIPAdress(testTargetMAC)
+
 time.sleep(5)

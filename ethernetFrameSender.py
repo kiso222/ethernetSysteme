@@ -78,3 +78,37 @@ def readRequestIPAdress(dstMacAdress):
     # Request.show()
 
     return sendEthernetFrame(Request)
+
+
+def writeRequestIPAdress(dstMacAdress, ipAdress: str, subnetmask: str, router: str):
+    option = 0x01
+    sub_option = 0x02
+    paddingByte = 0
+    block_qualifier_length = 2
+
+    ipAdresslength = 4
+    subnetmasklength = 4
+    routerlength = 4
+    dcp_block_length = ipAdresslength + subnetmasklength + routerlength + block_qualifier_length
+
+    if dcp_block_length % 2:
+        paddingByte = 1
+
+    # debug1 = ipAdresslength
+    # debug5 = subnetmasklength
+    # debug6 = routerlength
+
+    # debug2 = len(str(option))
+    # debug3 = len(str(sub_option))
+    # debug4 = len(str(dcp_block_length))
+
+    dcp_data_length = ipAdresslength + subnetmasklength + routerlength + len(str(option)) + len(str(sub_option)) + len(
+        str(dcp_block_length)) + block_qualifier_length + paddingByte
+
+    Request = Ether(src=managementServerMAC, dst=dstMacAdress) / ProfinetIO(frameID=0xFEFD) / ProfinetDCP(
+        service_id=0x04, service_type=0x00, option=option, sub_option=sub_option, dcp_data_length=dcp_data_length,
+        dcp_block_length=dcp_block_length, ip=ipAdress, netmask=subnetmask, gateway=router,
+        reserved=0)
+
+    # Request.show()
+    return sendEthernetFrame(Request)
