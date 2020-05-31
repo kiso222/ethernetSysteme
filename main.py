@@ -28,7 +28,6 @@ testTargetMAC = '08:00:06:6b:f5:b8'
 ####################################################
 #               Aufgabe 2                          #
 ####################################################
-# ethernetFrameReceiver.receiveEthernetFrame(sendingNetworkInterface['name'])
 asyncResceiver = ethernetFrameReceiver.asyncReceiveEthernetFrame(sendingNetworkInterface['name'])
 asyncResceiver.start()
 
@@ -36,20 +35,19 @@ asyncResceiver.start()
 #               Aufgabe 2                          #
 #                  Teil 1                          #
 ####################################################
-# ethernetFrameSender.identRequestAll()
-# ethernetFrameSender.sendEthernetFrame(Ident)
-
+ethernetFrameSender.identRequestAll()
+time.sleep(10)
 ####################################################
 #               Aufgabe 2                          #
 #                  Teil 2                          #
 ####################################################
 
-# ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'terminator')
-# time.sleep(1)
-# ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
+ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'FelixWarHier')
+ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
 
-#ethernetFrameSender.readRequestIPAdress(testTargetMAC)
-ethernetFrameSender.writeRequestIPAdress(testTargetMAC, '10.27.6.25', '255.255.255.0', '10.27.6.1')
+ethernetFrameSender.readRequestIPAdress(testTargetMAC)
+ethernetFrameSender.writeRequestIPAdress(testTargetMAC, '10.27.6.23', '255.255.255.0', '10.27.6.1')
 ethernetFrameSender.readRequestIPAdress(testTargetMAC)
 
 time.sleep(5)
