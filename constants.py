@@ -10,3 +10,4 @@ profinetEtherType = 0x8892
 
 sendingNetworkInterface = getUsableNetworkInterface(getNetworkInterfaces())
 
+allDevices = []
