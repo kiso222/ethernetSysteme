@@ -49,6 +49,10 @@ def incomingFrameHandler(frame):
                         allDevices.append(newDevice)
                     else:
                         allDevices.append(newDevice)
+
+                ########################################################
+                # ToDo: implement update functions for ip adress and nameofstation
+                # ######################################################
         except IndexError:
             pass
 
