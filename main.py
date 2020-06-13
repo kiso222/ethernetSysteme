@@ -1,6 +1,7 @@
 import pprint
 import time
 import random
+import uuid
 
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCP_IDENTIFY_REQUEST_FRAME_ID, DCP_SERVICE_ID_IDENTIFY, DCP_REQUEST
@@ -12,6 +13,7 @@ import ethernetFrameReceiver
 import ethernetFrameSender
 import ProfinetIODCPFrame
 from Device import getPositionOfDeviceInListbyNameOfStation
+from ProfinetIORPCFrame import ProfinetIORPCFrame
 from constants import *
 
 testTargetMAC = '08:00:06:6b:f5:b8'
@@ -42,12 +44,19 @@ asyncResceiver.start()
 #                  Teil 1                          #
 ####################################################
 ethernetFrameSender.identRequestAll()
+
+#while (True):
+#    time.sleep(1)
 time.sleep(10)
 print('Init finished')
 # random.shuffle(allDevices)
+
 time.sleep(0)
 for item in allDevices:
     print(str(item.nameOfStation))
+    print(str(item.objectUUID))
+    print(str(item.interfaceUUID))
+
 
 # pprint.pprint(allDevices)
 ####################################################
@@ -68,6 +77,10 @@ for item in allDevices:
 # time.sleep(5)
 
 
-ethernetFrameSender.readRequestIPAdress(
-    allDevices[getPositionOfDeviceInListbyNameOfStation(nameOfStation=testTargetName, list=allDevices)].macAdress)
-time.sleep(5)
+# ethernetFrameSender.readRequestIPAdress(
+#    allDevices[getPositionOfDeviceInListbyNameOfStation(nameOfStation=testTargetName, list=allDevices)].macAdress)
+# time.sleep(5)
+
+# test = ProfinetIORPCFrame()
+
+# test.getScapyProfinetIORPCFrame()

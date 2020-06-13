@@ -1,14 +1,20 @@
 import socket
 from pprint import pprint
 
+import uuid
+
 from scapy.contrib.pnio import ProfinetIO
-from scapy.contrib.pnio_dcp import ProfinetDCP
+from scapy.contrib.pnio_dcp import ProfinetDCP, DCPDeviceRoleBlock, DCPDeviceIDBlock
+from scapy.contrib.pnio_rpc import RPC_INTERFACE_UUID
 from scapy.layers.l2 import Ether, Dot1Q
+from scapy.main import load_contrib
 from scapy.sendrecv import sniff, AsyncSniffer
 from scapy2dict import to_dict
 
 from Device import Device, listContainsDevice, getPositionOfDeviceInList
 from constants import managementServerMAC, allDevices
+
+load_contrib("pnio_rcp")
 
 
 def receiveEthernetFrame(interface):
@@ -25,7 +31,7 @@ def asyncReceiveEthernetFrame(interface):
 def incomingFrameHandler(frame):
     if frame[Ether].dst == managementServerMAC:
         print('Da ist etwas reingekommen.')
-        frame.show()
+        # frame.show()
         try:
             if frame[Dot1Q].type == 0x8892:
                 if frame[ProfinetIO].frameID == 0xFEFF and frame[ProfinetDCP].service_id == 0x05 and frame[
@@ -40,16 +46,23 @@ def incomingFrameHandler(frame):
                     ip = dict['DCPIPBlock']['ip']
                     netmask = dict['DCPIPBlock']["netmask"]
                     gateway = dict['DCPIPBlock']['gateway']
+                    vendorID = hex(frame[DCPDeviceIDBlock].vendor_id)[2:].zfill(4)
+                    deviceID = hex(frame[DCPDeviceIDBlock].device_id)[2:].zfill(4)
+                    instance = hex(0x0001)[2:].zfill(4)
 
+                    uuidPart4 = '0x' + str(instance) + str(vendorID) + str(deviceID)
+                    uuidPart4 = int(uuidPart4, 16)
+                    objectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, uuidPart4))
+                    InterfaceUUID = RPC_INTERFACE_UUID['UUID_IO_DeviceInterface']
                     newDevice = Device(macAdress=macAdress, ip=ip, nameOfStation=nameOfStation, netmask=netmask,
-                                       gateway=gateway)
+                                       gateway=gateway, interfaceUUID=InterfaceUUID,
+                                       objectUUID=objectUUID)
                     if listContainsDevice(device=newDevice, list=allDevices):
                         index = getPositionOfDeviceInList(device=newDevice, list=allDevices)
                         del allDevices[index]
                         allDevices.append(newDevice)
                     else:
                         allDevices.append(newDevice)
-
                 ########################################################
                 # ToDo: implement update functions for ip adress and nameofstation
                 # ######################################################
