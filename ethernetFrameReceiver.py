@@ -29,6 +29,7 @@ def asyncReceiveEthernetFrame(interface):
 
 
 def incomingFrameHandler(frame):
+    # frame.show()
     if frame[Ether].dst == managementServerMAC:
         print('Da ist etwas reingekommen.')
         # frame.show()

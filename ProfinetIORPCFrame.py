@@ -1,6 +1,6 @@
 from scapy.main import load_contrib
 
-load_contrib("pnio_rcp")
+load_contrib("pnio_rpc")
 
 
 

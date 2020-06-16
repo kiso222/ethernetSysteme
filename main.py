@@ -3,9 +3,14 @@ import time
 import random
 import uuid
 
+from scapy.contrib.dce_rpc import DceRpc
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCP_IDENTIFY_REQUEST_FRAME_ID, DCP_SERVICE_ID_IDENTIFY, DCP_REQUEST
+from scapy.contrib.pnio_rpc import BlockHeader, Block, IODControlReq, PNIOServiceReqPDU, IOCRBlockReq, NDRData, \
+    ARBlockReq, IODWriteReq
+from scapy.layers.inet import UDP, IP
 from scapy.layers.l2 import Ether
+from scapy.sendrecv import send
 
 import EthernetFrame
 import ProfinetIOFrame
@@ -45,18 +50,18 @@ asyncResceiver.start()
 ####################################################
 ethernetFrameSender.identRequestAll()
 
-#while (True):
+# while (True):
 #    time.sleep(1)
 time.sleep(10)
 print('Init finished')
 # random.shuffle(allDevices)
 
-time.sleep(0)
+# time.sleep(0)
 for item in allDevices:
     print(str(item.nameOfStation))
     print(str(item.objectUUID))
     print(str(item.interfaceUUID))
-
+    print(str(item.ip))
 
 # pprint.pprint(allDevices)
 ####################################################
@@ -84,3 +89,16 @@ for item in allDevices:
 # test = ProfinetIORPCFrame()
 
 # test.getScapyProfinetIORPCFrame()
+
+test = Ether(dst=testTargetMAC) / IP(dst='172.16.1.213') / UDP(sport=54599,
+                                                               dport=0x8894) / DceRpc(version=0x004, type=0x00,
+                                                                                      flags1=0x20,
+                                                                                      flags2=0x0,
+                                                                                      object_uuid='dea00000-6c97-11d1-8271-0001002a0301',
+                                                                                      interface_uuid='dea00001-6c97-11d1-8271-00a02442df7d',
+                                                                                      activity='db0623e7-6401-4484-8b39-7a76f6c25092')
+test.show()
+
+ethernetFrameSender.sendEthernetFrame(test)
+
+time.sleep(5)
