@@ -29,11 +29,11 @@ def asyncReceiveEthernetFrame(interface):
 
 
 def incomingFrameHandler(frame):
-    # frame.show()
-    if frame[Ether].dst == managementServerMAC:
-        print('Da ist etwas reingekommen.')
-        # frame.show()
-        try:
+    frame.show()
+    try:
+        if frame[Ether].dst == managementServerMAC:
+            print('Da ist etwas reingekommen.')
+            frame.show()
             if frame[Dot1Q].type == 0x8892:
                 if frame[ProfinetIO].frameID == 0xFEFF and frame[ProfinetDCP].service_id == 0x05 and frame[
                     ProfinetDCP].service_type == 0x01:
@@ -51,7 +51,7 @@ def incomingFrameHandler(frame):
                     deviceID = hex(frame[DCPDeviceIDBlock].device_id)[2:].zfill(4)
                     instance = hex(0x0001)[2:].zfill(4)
 
-                    uuidPart4 = '0x' + str(instance) + str(vendorID) + str(deviceID)
+                    uuidPart4 = '0x' + str(instance) + str(deviceID) + str(vendorID)
                     uuidPart4 = int(uuidPart4, 16)
                     objectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, uuidPart4))
                     InterfaceUUID = RPC_INTERFACE_UUID['UUID_IO_DeviceInterface']
@@ -67,8 +67,8 @@ def incomingFrameHandler(frame):
                 ########################################################
                 # ToDo: implement update functions for ip adress and nameofstation
                 # ######################################################
-        except IndexError:
-            pass
+    except IndexError:
+        pass
 
 
 def frameToDict(frame):

@@ -1,5 +1,10 @@
+import uuid
+
+from scapy.contrib.dce_rpc import DceRpc
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCPNameOfStationBlock
+from scapy.contrib.pnio_rpc import PNIOServiceReqPDU, IODWriteReq
+from scapy.layers.inet import UDP, IP
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sendp, sr
 
@@ -10,6 +15,7 @@ from scapy.sendrecv import sendp, sr
 #     s = socket(AF_PACKET, SOCK_RAW)
 #     s.bind(ethernetFrame.interface, 0)
 #     return s.send(ethernetFrame.dst + ethernetFrame.src + ethernetFrame.type + ethernetFrame.payload)
+from Device import Device
 from constants import managementServerNICName, managementServerMAC, profinetIOMulticastMAC, allDevices
 
 
@@ -113,3 +119,20 @@ def writeRequestIPAdress(dstMacAdress, ipAdress: str, subnetmask: str, router: s
 
     # Request.show()
     return sendEthernetFrame(Request)
+
+def readRequestIandMFilterData(device:Device):
+    Frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
+                                                                           dport=0x8894) / DceRpc(version=0x004,
+                                                                                                  type=0x00,
+                                                                                                  flags1=0x20,
+                                                                                                  flags2=0x0,
+                                                                                                  object_uuid=device.objectUUID,
+                                                                                                  interface_uuid=device.interfaceUUID,
+                                                                                                  activity=uuid.uuid4(),
+                                                                                                  opnum=0x5,
+                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+        args_max=593, max_count=593, args_length=0x40, actual_count=0x40) / IODWriteReq(block_type=0x0009, API=0x0,
+                                                                                        index=0xF840,
+                                                                                        recordDataLength=0x1000,
+                                                                                        RWPadding=24, seqNum=1)
+    return sendEthernetFrame(Frame)

@@ -21,9 +21,14 @@ from Device import getPositionOfDeviceInListbyNameOfStation
 from ProfinetIORPCFrame import ProfinetIORPCFrame
 from constants import *
 
-testTargetMAC = '08:00:06:6b:f5:b8'
+# testTargetMAC = '08:00:06:6b:f5:b8'
 testTargetName = 'et200s-nr3'
+# testTargetMAC = '00:0e:8c:cb:56:83'  # et200s-nr3
+# testTargetIP = '172.16.1.213'
 
+#testTargetName = 'et200s-nr2'
+#testTargetMAC = '00:0e:8c:cb:56:5f'  # et200s-nr3
+#testTargetIP = '172.16.1.212'
 # print(managementServerNICName)
 
 # Name of Station lesen/schreiben
@@ -62,6 +67,7 @@ for item in allDevices:
     print(str(item.objectUUID))
     print(str(item.interfaceUUID))
     print(str(item.ip))
+    print(str(item.macAdress))
 
 # pprint.pprint(allDevices)
 ####################################################
@@ -86,19 +92,12 @@ for item in allDevices:
 #    allDevices[getPositionOfDeviceInListbyNameOfStation(nameOfStation=testTargetName, list=allDevices)].macAdress)
 # time.sleep(5)
 
-# test = ProfinetIORPCFrame()
+####################################################
+#               Aufgabe 3                          #
+#                  Teil 1                          #
+####################################################
 
-# test.getScapyProfinetIORPCFrame()
-
-test = Ether(dst=testTargetMAC) / IP(dst='172.16.1.213') / UDP(sport=54599,
-                                                               dport=0x8894) / DceRpc(version=0x004, type=0x00,
-                                                                                      flags1=0x20,
-                                                                                      flags2=0x0,
-                                                                                      object_uuid='dea00000-6c97-11d1-8271-0001002a0301',
-                                                                                      interface_uuid='dea00001-6c97-11d1-8271-00a02442df7d',
-                                                                                      activity='db0623e7-6401-4484-8b39-7a76f6c25092')
-test.show()
-
-ethernetFrameSender.sendEthernetFrame(test)
+targetDeviceNumber = getPositionOfDeviceInListbyNameOfStation(list=allDevices, nameOfStation=testTargetName)
+ethernetFrameSender.readRequestIandMFilterData(allDevices[targetDeviceNumber])
 
 time.sleep(5)
