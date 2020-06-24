@@ -99,5 +99,17 @@ for item in allDevices:
 
 targetDeviceNumber = getPositionOfDeviceInListbyNameOfStation(list=allDevices, nameOfStation=testTargetName)
 ethernetFrameSender.readRequestIandMFilterData(allDevices[targetDeviceNumber])
+time.sleep(5)
+
+ethernetFrameSender.readRequestIandM0Data(allDevices[targetDeviceNumber])
 
 time.sleep(5)
+
+for item in allDevices:
+    print(str(item.nameOfStation))
+    print(str(item.vendorID))
+    print(str(item.serialNumber))
+
+
+while (True):
+    time.sleep(1)

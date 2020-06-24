@@ -1,4 +1,6 @@
 import socket
+from binascii import hexlify
+from copy import deepcopy
 from pprint import pprint
 
 import uuid
@@ -6,12 +8,15 @@ import uuid
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCPDeviceRoleBlock, DCPDeviceIDBlock
 from scapy.contrib.pnio_rpc import RPC_INTERFACE_UUID
+from scapy.layers.inet import UDP
 from scapy.layers.l2 import Ether, Dot1Q
 from scapy.main import load_contrib
+from scapy.packet import Raw
 from scapy.sendrecv import sniff, AsyncSniffer
+from scapy.utils import hexdump
 from scapy2dict import to_dict
 
-from Device import Device, listContainsDevice, getPositionOfDeviceInList
+from Device import Device, listContainsDevice, getPositionOfDeviceInList, getPositionOfDeviceInListbyMacAdress
 from constants import managementServerMAC, allDevices
 
 load_contrib("pnio_rcp")
@@ -29,11 +34,52 @@ def asyncReceiveEthernetFrame(interface):
 
 
 def incomingFrameHandler(frame):
-    frame.show()
+    # frame.show()
     try:
         if frame[Ether].dst == managementServerMAC:
             print('Da ist etwas reingekommen.')
-            frame.show()
+            # frame.show()
+            if UDP in frame:
+                if frame[UDP].dport == 34964:
+                    print('PNIO-CM reingekommen')
+                    hexString = bytes(frame).hex()
+                    hexString = [hexString[i:i + 2] for i in range(0, len(hexString), 2)]
+                    device = allDevices[
+                        getPositionOfDeviceInListbyMacAdress(list=allDevices, macAdress=frame[Ether].src)]
+                    if ''.join(hexString[142:144]) == '8009':
+                        print('Read Response eingegangen')
+                        if hexString[176:178] == ['f8', '40']:
+                            print('I&M0 FilterData')
+                            numberOfSlots = int(''.join(hexString[218:220]))
+                            print("Number of Slots: {}".format(numberOfSlots))
+                            for i in range(numberOfSlots):
+                                print(i)
+                                startByte = 220 + i * 14
+                                endByte = startByte + 14 + 1
+                                temp = hexString[startByte:endByte]
+                                slotNumber = int(''.join(temp[0:2]))
+                                numberOfSublots = int(''.join(temp[6:8]))
+                                # subSlotNumber = int(''.join(temp[9:11]))
+                                print(startByte)
+                                print(endByte)
+                                print(slotNumber)
+                                print(numberOfSublots)
+                            temp2 = []
+                            for j in range(numberOfSlots):
+                                temp2.append([])
+                                for k in range(numberOfSublots):
+                                    temp2[j].append(k + 1)
+                            device.slots = deepcopy(temp2)
+
+                            device.IandM0Slot = int(''.join(hexString[416:418]))
+                            device.IandM0SubSlot = int(''.join(hexString[424:426]))
+                            print(device.IandM0Slot)
+                            print(device.IandM0SubSlot)
+                    if hexString[176:178] == ['af', 'f0']:
+                        print('I&M0 Data')
+                        device.vendorID = ''.join(hexString[212:214])
+                        device.serialNumber = ''.join(hexString[234:250])
+
             if frame[Dot1Q].type == 0x8892:
                 if frame[ProfinetIO].frameID == 0xFEFF and frame[ProfinetDCP].service_id == 0x05 and frame[
                     ProfinetDCP].service_type == 0x01:
@@ -67,6 +113,8 @@ def incomingFrameHandler(frame):
                 ########################################################
                 # ToDo: implement update functions for ip adress and nameofstation
                 # ######################################################
+
+
     except IndexError:
         pass
 

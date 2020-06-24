@@ -2,7 +2,8 @@ from uuid import UUID
 
 
 class Device:
-    def __init__(self, macAdress: str, nameOfStation: str, ip: str, netmask: str, gateway: str, objectUUID: UUID, interfaceUUID: UUID):
+    def __init__(self, macAdress: str, nameOfStation: str, ip: str, netmask: str, gateway: str, objectUUID: UUID,
+                 interfaceUUID: UUID):
         self.macAdress = macAdress
         self.nameOfStation = nameOfStation
         self.ip = ip
@@ -10,6 +11,11 @@ class Device:
         self.gateway = gateway
         self.objectUUID = objectUUID
         self.interfaceUUID = interfaceUUID
+        self.slots = []
+        self.IandM0Slot = 0
+        self.IandM0SubSlot = 0
+        self.vendorID = ''
+        self.serialNumber = ''
 
     def getMacAdress(self):
         return self.macAdress
@@ -40,4 +46,10 @@ def getPositionOfDeviceInList(list: list, device: Device):
 def getPositionOfDeviceInListbyNameOfStation(list: list, nameOfStation: str):
     for i in range(len(list)):
         if list[i].nameOfStation == nameOfStation:
+            return i
+
+
+def getPositionOfDeviceInListbyMacAdress(list: list, macAdress: str):
+    for i in range(len(list)):
+        if list[i].macAdress == macAdress:
             return i
