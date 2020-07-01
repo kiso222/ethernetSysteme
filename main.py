@@ -7,6 +7,7 @@ from constants import *
 
 # testTargetMAC = '08:00:06:6b:f5:b8'
 testTargetName = 'et200s-nr3'
+#testTargetName = 'et200s-nr2'
 # testTargetMAC = '00:0e:8c:cb:56:83'  # et200s-nr3
 # testTargetIP = '172.16.1.213'
 
@@ -97,5 +98,10 @@ for item in allDevices:
 ethernetFrameSender.connectRequest(allDevices[targetDeviceNumber])
 
 time.sleep(5)
+print(allDevices[targetDeviceNumber].ArUUID)
+ethernetFrameSender.writeRequestIandM1Data(allDevices[targetDeviceNumber])
+
+time.sleep(2)
+ethernetFrameSender.releaseRequest(allDevices[targetDeviceNumber])
 #while (True):
 #    time.sleep(1)

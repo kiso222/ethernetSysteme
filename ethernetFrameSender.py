@@ -3,10 +3,28 @@ import uuid
 from scapy.contrib.dce_rpc import DceRpc
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCPNameOfStationBlock
-from scapy.contrib.pnio_rpc import PNIOServiceReqPDU, IODWriteReq, ARBlockReq, IOCRBlockReq
+from scapy.contrib.pnio_rpc import PNIOServiceReqPDU, IODWriteReq, ARBlockReq, IOCRBlockReq, IODControlReq, Block, \
+    BlockHeader, IOD_WRITE_REQ_INDEX
+from scapy.fields import StrFixedLenField, ShortField, UUIDField, XIntField, XShortField, XShortEnumField, LenField
 from scapy.layers.inet import UDP, IP
 from scapy.layers.l2 import Ether
+from scapy.packet import Raw
 from scapy.sendrecv import sendp, sr
+
+
+class IM1Block(Block):
+    """IODWrite request block"""
+    fields_desc = [
+        BlockHeader,
+        StrFixedLenField("IM_Tag_Function", "", 32),
+        StrFixedLenField("IM_Tag_Location", "", 22),
+    ]
+    # default block_type value
+    block_type = 0x0021
+
+    def payload_length(self):
+        return self.recordDataLength
+
 
 # def sendEthernetFrame(ethernetFrame: EthernetFrame):
 #      assert(len(ethernetFrame.src) == len(ethernetFrame.dst) == 6)
@@ -162,6 +180,7 @@ def readRequestIandM0Data(device: Device):
 
 def connectRequest(device: Device):
     ArUUID = uuid.uuid4()
+    device.ArUUID = ArUUID
     CMInitiatorObjectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, 0x567812345678))
     frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
                                                                            dport=0x8894) / DceRpc(version=0x004,
@@ -177,11 +196,55 @@ def connectRequest(device: Device):
                                                                                    SessionKey=69,
                                                                                    CMInitiatorMacAdd=managementServerMAC,
                                                                                    CMInitiatorObjectUUID=CMInitiatorObjectUUID,
-                                                                                   CMInitiatorStationName='ggabrams',
-                                                                                   ARProperties_ParametrizationServer=1,
-                                                                                   ARProperties_reserved_1=1,
-                                                                                   ARProperties_DeviceAccess=1
+                                                                                   CMInitiatorStationName='ggabrams'
+                                                                                   # ,
+                                                                                   # ARProperties_ParametrizationServer=1,
+                                                                                   # ARProperties_reserved_1=1,
+                                                                                   # ARProperties_DeviceAccess=1
                                                                                    )
 
+    sendEthernetFrame(frame)
+
+
+def releaseRequest(device: Device):
+    CMInitiatorObjectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, 0x567812345678))
+    frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
+                                                                           dport=0x8894) / DceRpc(version=0x004,
+                                                                                                  type=0x00,
+                                                                                                  flags1=0x20,
+                                                                                                  flags2=0x0,
+                                                                                                  object_uuid=device.objectUUID,
+                                                                                                  interface_uuid=device.interfaceUUID,
+                                                                                                  activity=uuid.uuid4(),
+                                                                                                  opnum=0x1,
+                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+        args_max=250, max_count=250, args_length=32, actual_count=32) / IODControlReq(ARUUID=device.ArUUID,
+                                                                                      SessionKey=69,
+                                                                                      ControlCommand_Release=1
+                                                                                      )
+
+    sendEthernetFrame(frame)
+
+
+def writeRequestIandM1Data(device: Device):
+    frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
+                                                                           dport=0x8894) / DceRpc(version=0x004,
+                                                                                                  type=0x00,
+                                                                                                  flags1=0x20,
+                                                                                                  flags2=0x0,
+                                                                                                  object_uuid=device.objectUUID,
+                                                                                                  interface_uuid=device.interfaceUUID,
+                                                                                                  activity=uuid.uuid4(),
+                                                                                                  opnum=0x3,
+                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+        args_max=593, max_count=593, args_length=0x40, actual_count=0x40) / IODWriteReq(block_type=0x0008,
+                                                                                        API=0x0,
+                                                                                        index=0xaff1,
+
+                                                                                        RWPadding=8, seqNum=1,
+                                                                                        slotNumber=0,
+                                                                                        subslotNumber=1,
+                                                                                        ARUUID=device.ArUUID) / IM1Block(
+        block_length=54, IM_Tag_Function='test', IM_Tag_Location='test2')
     frame.show()
     sendEthernetFrame(frame)
