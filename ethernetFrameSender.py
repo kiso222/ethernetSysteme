@@ -3,7 +3,7 @@ import uuid
 from scapy.contrib.dce_rpc import DceRpc
 from scapy.contrib.pnio import ProfinetIO
 from scapy.contrib.pnio_dcp import ProfinetDCP, DCPNameOfStationBlock
-from scapy.contrib.pnio_rpc import PNIOServiceReqPDU, IODWriteReq
+from scapy.contrib.pnio_rpc import PNIOServiceReqPDU, IODWriteReq, ARBlockReq, IOCRBlockReq
 from scapy.layers.inet import UDP, IP
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sendp, sr
@@ -157,4 +157,31 @@ def readRequestIandM0Data(device: Device):
                                                                                         RWPadding=24, seqNum=1,
                                                                                         slotNumber=device.IandM0Slot,
                                                                                         subslotNumber=device.IandM0SubSlot)
+    sendEthernetFrame(frame)
+
+
+def connectRequest(device: Device):
+    ArUUID = uuid.uuid4()
+    CMInitiatorObjectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, 0x567812345678))
+    frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
+                                                                           dport=0x8894) / DceRpc(version=0x004,
+                                                                                                  type=0x00,
+                                                                                                  flags1=0x20,
+                                                                                                  flags2=0x0,
+                                                                                                  object_uuid=device.objectUUID,
+                                                                                                  interface_uuid=device.interfaceUUID,
+                                                                                                  activity=uuid.uuid4(),
+                                                                                                  opnum=0x0,
+                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+        args_max=250, max_count=250, args_length=66, actual_count=66) / ARBlockReq(ARUUID=ArUUID, ARType=0x0006,
+                                                                                   SessionKey=69,
+                                                                                   CMInitiatorMacAdd=managementServerMAC,
+                                                                                   CMInitiatorObjectUUID=CMInitiatorObjectUUID,
+                                                                                   CMInitiatorStationName='ggabrams',
+                                                                                   ARProperties_ParametrizationServer=1,
+                                                                                   ARProperties_reserved_1=1,
+                                                                                   ARProperties_DeviceAccess=1
+                                                                                   )
+
+    frame.show()
     sendEthernetFrame(frame)

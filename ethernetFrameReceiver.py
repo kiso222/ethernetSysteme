@@ -51,19 +51,14 @@ def incomingFrameHandler(frame):
                         if hexString[176:178] == ['f8', '40']:
                             print('I&M0 FilterData')
                             numberOfSlots = int(''.join(hexString[218:220]))
-                            print("Number of Slots: {}".format(numberOfSlots))
+                            #print("Number of Slots: {}".format(numberOfSlots))
                             for i in range(numberOfSlots):
-                                print(i)
                                 startByte = 220 + i * 14
                                 endByte = startByte + 14 + 1
                                 temp = hexString[startByte:endByte]
                                 slotNumber = int(''.join(temp[0:2]))
                                 numberOfSublots = int(''.join(temp[6:8]))
                                 # subSlotNumber = int(''.join(temp[9:11]))
-                                print(startByte)
-                                print(endByte)
-                                print(slotNumber)
-                                print(numberOfSublots)
                             temp2 = []
                             for j in range(numberOfSlots):
                                 temp2.append([])
@@ -73,8 +68,6 @@ def incomingFrameHandler(frame):
 
                             device.IandM0Slot = int(''.join(hexString[416:418]))
                             device.IandM0SubSlot = int(''.join(hexString[424:426]))
-                            print(device.IandM0Slot)
-                            print(device.IandM0SubSlot)
                     if hexString[176:178] == ['af', 'f0']:
                         print('I&M0 Data')
                         device.vendorID = ''.join(hexString[212:214])

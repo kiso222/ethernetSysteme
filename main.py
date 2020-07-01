@@ -1,24 +1,8 @@
-import pprint
 import time
-import random
-import uuid
 
-from scapy.contrib.dce_rpc import DceRpc
-from scapy.contrib.pnio import ProfinetIO
-from scapy.contrib.pnio_dcp import ProfinetDCP, DCP_IDENTIFY_REQUEST_FRAME_ID, DCP_SERVICE_ID_IDENTIFY, DCP_REQUEST
-from scapy.contrib.pnio_rpc import BlockHeader, Block, IODControlReq, PNIOServiceReqPDU, IOCRBlockReq, NDRData, \
-    ARBlockReq, IODWriteReq
-from scapy.layers.inet import UDP, IP
-from scapy.layers.l2 import Ether
-from scapy.sendrecv import send
-
-import EthernetFrame
-import ProfinetIOFrame
 import ethernetFrameReceiver
 import ethernetFrameSender
-import ProfinetIODCPFrame
 from Device import getPositionOfDeviceInListbyNameOfStation
-from ProfinetIORPCFrame import ProfinetIORPCFrame
 from constants import *
 
 # testTargetMAC = '08:00:06:6b:f5:b8'
@@ -59,7 +43,6 @@ ethernetFrameSender.identRequestAll()
 #    time.sleep(1)
 time.sleep(10)
 print('Init finished')
-# random.shuffle(allDevices)
 
 # time.sleep(0)
 for item in allDevices:
@@ -106,10 +89,13 @@ ethernetFrameSender.readRequestIandM0Data(allDevices[targetDeviceNumber])
 time.sleep(5)
 
 for item in allDevices:
-    print(str(item.nameOfStation))
-    print(str(item.vendorID))
-    print(str(item.serialNumber))
+    print('Name of Station: {}'.format(str(item.nameOfStation)))
+    print('Vendor ID: {}'.format(str(item.vendorID)))
+    print('Serial Number: {}'.format(str(item.serialNumber)))
+    print('')
 
+ethernetFrameSender.connectRequest(allDevices[targetDeviceNumber])
 
-while (True):
-    time.sleep(1)
+time.sleep(5)
+#while (True):
+#    time.sleep(1)
