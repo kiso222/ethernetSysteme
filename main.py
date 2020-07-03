@@ -6,14 +6,14 @@ from Device import getPositionOfDeviceInListbyNameOfStation
 from constants import *
 
 # testTargetMAC = '08:00:06:6b:f5:b8'
-testTargetName = 'et200s-nr3'
-#testTargetName = 'et200s-nr2'
+# testTargetName = 'et200s-nr3'
+testTargetName = 'et200s-nr2'
 # testTargetMAC = '00:0e:8c:cb:56:83'  # et200s-nr3
 # testTargetIP = '172.16.1.213'
-
-#testTargetName = 'et200s-nr2'
-#testTargetMAC = '00:0e:8c:cb:56:5f'  # et200s-nr3
-#testTargetIP = '172.16.1.212'
+# testTargetMAC = '08:00:06:6b:f5:b8'
+# testTargetName = 'et200s-nr2'
+# testTargetMAC = '00:0e:8c:cb:56:5f'  # et200s-nr3
+# testTargetIP = '172.16.1.212'
 # print(managementServerNICName)
 
 # Name of Station lesen/schreiben
@@ -62,11 +62,11 @@ for item in allDevices:
 # ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
 
 
-# ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'FelixWarHier')
+# ethernetFrameSender.writeRequestNameOfStation(testTargetMAC, 'et200s-nr4')
 # ethernetFrameSender.readRequestNameOfStation(testTargetMAC)
 
 # ethernetFrameSender.readRequestIPAdress(testTargetMAC)
-# ethernetFrameSender.writeRequestIPAdress(testTargetMAC, '10.27.6.23', '255.255.255.0', '10.27.6.1')
+# ethernetFrameSender.writeRequestIPAdress(testTargetMAC, '172.16.1.214', '255.255.255.0', '172.16.1.1')
 # ethernetFrameSender.readRequestIPAdress(testTargetMAC)
 
 # time.sleep(5)
@@ -97,11 +97,11 @@ for item in allDevices:
 
 ethernetFrameSender.connectRequest(allDevices[targetDeviceNumber])
 
-time.sleep(5)
-print(allDevices[targetDeviceNumber].ArUUID)
+#time.sleep(1)
 ethernetFrameSender.writeRequestIandM1Data(allDevices[targetDeviceNumber])
 
-time.sleep(2)
+#time.sleep(1)
 ethernetFrameSender.releaseRequest(allDevices[targetDeviceNumber])
-#while (True):
+time.sleep(1)
+# while (True):
 #    time.sleep(1)

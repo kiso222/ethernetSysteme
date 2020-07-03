@@ -1,4 +1,5 @@
 import uuid
+import random
 
 from scapy.contrib.dce_rpc import DceRpc
 from scapy.contrib.pnio import ProfinetIO
@@ -13,7 +14,6 @@ from scapy.sendrecv import sendp, sr
 
 
 class IM1Block(Block):
-    """IODWrite request block"""
     fields_desc = [
         BlockHeader,
         StrFixedLenField("IM_Tag_Function", "", 32),
@@ -181,6 +181,11 @@ def readRequestIandM0Data(device: Device):
 def connectRequest(device: Device):
     ArUUID = uuid.uuid4()
     device.ArUUID = ArUUID
+    seqNumber = random.randint(0, 999)
+    device.seqNumber = seqNumber
+    sessionKey = random.randint(0, 999)
+    device.sessionKey = sessionKey
+
     CMInitiatorObjectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, 0x567812345678))
     frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
                                                                            dport=0x8894) / DceRpc(version=0x004,
@@ -191,22 +196,26 @@ def connectRequest(device: Device):
                                                                                                   interface_uuid=device.interfaceUUID,
                                                                                                   activity=uuid.uuid4(),
                                                                                                   opnum=0x0,
-                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+                                                                                                  endianness=0x1,
+                                                                                                  sequence_num=0
+                                                                                                  ) / PNIOServiceReqPDU(
         args_max=250, max_count=250, args_length=66, actual_count=66) / ARBlockReq(ARUUID=ArUUID, ARType=0x0006,
-                                                                                   SessionKey=69,
+                                                                                   SessionKey=sessionKey,
                                                                                    CMInitiatorMacAdd=managementServerMAC,
+                                                                                   CMInitiatorActivityTimeoutFactor=600,
                                                                                    CMInitiatorObjectUUID=CMInitiatorObjectUUID,
-                                                                                   CMInitiatorStationName='ggabrams'
-                                                                                   # ,
-                                                                                   # ARProperties_ParametrizationServer=1,
-                                                                                   # ARProperties_reserved_1=1,
-                                                                                   # ARProperties_DeviceAccess=1
+                                                                                   CMInitiatorStationName='ggabrams',
+                                                                                   ARProperties_ParametrizationServer=1,
+                                                                                   ARProperties_reserved_1=1,
+                                                                                   ARProperties_DeviceAccess=1
                                                                                    )
 
     sendEthernetFrame(frame)
 
 
 def releaseRequest(device: Device):
+    device.seqNumber = device.seqNumber + 1
+
     CMInitiatorObjectUUID = uuid.UUID(fields=(0xDEA00000, 0x6C97, 0x11D1, 0x82, 0x71, 0x567812345678))
     frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
                                                                            dport=0x8894) / DceRpc(version=0x004,
@@ -217,9 +226,10 @@ def releaseRequest(device: Device):
                                                                                                   interface_uuid=device.interfaceUUID,
                                                                                                   activity=uuid.uuid4(),
                                                                                                   opnum=0x1,
-                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
+                                                                                                  endianness=0x1,
+                                                                                                  sequence_num=2) / PNIOServiceReqPDU(
         args_max=250, max_count=250, args_length=32, actual_count=32) / IODControlReq(ARUUID=device.ArUUID,
-                                                                                      SessionKey=69,
+                                                                                      SessionKey=device.sessionKey,
                                                                                       ControlCommand_Release=1
                                                                                       )
 
@@ -227,6 +237,9 @@ def releaseRequest(device: Device):
 
 
 def writeRequestIandM1Data(device: Device):
+    device.seqNumber = device.seqNumber + 1
+    IMTagFunction = 'test'.ljust(32)
+    IMTagLocation = ''.ljust(22)
     frame = Ether(dst=device.macAdress) / IP(dst=device.ip, flags=2) / UDP(sport=0x8894,
                                                                            dport=0x8894) / DceRpc(version=0x004,
                                                                                                   type=0x00,
@@ -236,15 +249,14 @@ def writeRequestIandM1Data(device: Device):
                                                                                                   interface_uuid=device.interfaceUUID,
                                                                                                   activity=uuid.uuid4(),
                                                                                                   opnum=0x3,
-                                                                                                  endianness=0x1) / PNIOServiceReqPDU(
-        args_max=593, max_count=593, args_length=0x40, actual_count=0x40) / IODWriteReq(block_type=0x0008,
-                                                                                        API=0x0,
-                                                                                        index=0xaff1,
-
-                                                                                        RWPadding=8, seqNum=1,
-                                                                                        slotNumber=0,
-                                                                                        subslotNumber=1,
-                                                                                        ARUUID=device.ArUUID) / IM1Block(
-        block_length=54, IM_Tag_Function='test', IM_Tag_Location='test2')
-    frame.show()
+                                                                                                  endianness=0x1,
+                                                                                                  sequence_num=1) / PNIOServiceReqPDU(
+        args_max=124, max_count=124, args_length=124, actual_count=124) / IODWriteReq(block_type=0x0008,
+                                                                                      API=0x0,
+                                                                                      index=0xaff1,
+                                                                                      RWPadding=8, seqNum=0,
+                                                                                      slotNumber=0,
+                                                                                      subslotNumber=1,
+                                                                                      ARUUID=device.ArUUID) / IM1Block(
+        block_length=56, IM_Tag_Function=IMTagFunction, IM_Tag_Location=IMTagLocation)
     sendEthernetFrame(frame)
